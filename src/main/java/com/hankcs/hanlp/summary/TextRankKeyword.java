@@ -121,30 +121,21 @@ public class TextRankKeyword extends KeywordExtractor
             }
         }
 //        System.out.println(wordList);
-        Map<String, Set<String>> words = new TreeMap<String, Set<String>>();
-        Queue<String> que = new LinkedList<String>();
-        for (String w : wordList)
+        Map<String, Set<String>> words = new HashMap<String, Set<String>>();
+        for(int i = 0; i < wordList.length; ++i)
         {
-            if (!words.containsKey(w))
+            String w = wordList.get(i);
+            if(!words.containsKey(w))
             {
-                words.put(w, new TreeSet<String>());
+                words.put(w, new HashSet<String>());
             }
-            // 复杂度O(n-1)
-            if (que.size() >= 5)
+            for(int j = i-1; j >= 0 && j > i-5; --j) // 当前单词与前面4个单词建立联系，即窗口大小为5
             {
-                que.poll();
+                String winWord = wordList.get(j);
+                if(w.equals(winWord)) continue;
+                words.get(w).add(winWord);
+                words.get(winWord).add(w);
             }
-            for (String qWord : que)
-            {
-                if (w.equals(qWord))
-                {
-                    continue;
-                }
-                //既然是邻居,那么关系是相互的,遍历一遍即可
-                words.get(w).add(qWord);
-                words.get(qWord).add(w);
-            }
-            que.offer(w);
         }
 //        System.out.println(words);
         Map<String, Float> score = new HashMap<String, Float>();
